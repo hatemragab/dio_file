@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+
 import 'screens/upload_screen.dart';
+
 /*
   define the problem
   send http request with upload files
@@ -8,8 +10,5 @@ import 'screens/upload_screen.dart';
 */
 
 void main() {
-  runApp(MaterialApp(
-    home: UploadScreen(),
-    debugShowCheckedModeBanner: false,
-  ));
+  runApp(MaterialApp(home: UploadScreen(), debugShowCheckedModeBanner: false));
 }

@@ -1,6 +1,8 @@
 import 'package:path/path.dart';
+
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 class CustomDio {
@@ -19,14 +21,15 @@ class CustomDio {
   // notes
   // onSendProgress onReceiveProgress cancelToken and Download Will have another video to explain
 
-  Future<Response> send(
-      {required String reqMethod,
-      required String path,
-      Function(int count, int total)? onSendProgress,
-      Function(int count, int total)? onReceiveProgress,
-      CancelToken? cancelToken,
-      Map<String, dynamic>? body,
-      Map<String, dynamic>? query}) async {
+  Future<Response> send({
+    required String reqMethod,
+    required String path,
+    Function(int count, int total)? onSendProgress,
+    Function(int count, int total)? onReceiveProgress,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? body,
+    Map<String, dynamic>? query,
+  }) async {
     late Response res;
 
     try {
@@ -96,12 +99,13 @@ class CustomDio {
     }
   }
 
-  Future<Response> uploadFiles(
-      {required String apiEndPoint,
-      required List<DioUploadFileModel> filesModel,
-      void sendProgress(int received, int total)?,
-      List<Map<String, String>>? body,
-      CancelToken? cancelToken}) async {
+  Future<Response> uploadFiles({
+    required String apiEndPoint,
+    required List<DioUploadFileModel> filesModel,
+    void sendProgress(int received, int total)?,
+    List<Map<String, String>>? body,
+    CancelToken? cancelToken,
+  }) async {
     final mapOfData = <String, dynamic>{};
     for (final file in filesModel) {
       final _file = File(file.filePath);
@@ -119,43 +123,50 @@ class CustomDio {
       final x = body.map((e) => MapEntry(e.keys.first, e.values.first));
       formData.fields.addAll(x);
     }
-    final Response response = await dio.post(apiEndPoint,
-        data: formData, onSendProgress: sendProgress, cancelToken: cancelToken);
+    final Response response = await dio.post(
+      apiEndPoint,
+      data: formData,
+      onSendProgress: sendProgress,
+      cancelToken: cancelToken,
+    );
     throwIfNoSuccess(response);
     return response;
   }
 
-  Future<Response> uploadFile(
-      {required String apiEndPoint,
-      required String filePath,
-      void sendProgress(int received, int total)?,
-      List<Map<String, String>>? body,
-      CancelToken? cancelToken}) async {
+  Future<Response> uploadFile({
+    required String apiEndPoint,
+    required String filePath,
+    void sendProgress(int received, int total)?,
+    List<Map<String, String>>? body,
+    CancelToken? cancelToken,
+  }) async {
     final File file = File(filePath);
     final String fileName = basename(file.path);
     final FormData data = FormData.fromMap({
-      "file": await MultipartFile.fromFile(
-        file.path,
-        filename: fileName,
-      ),
+      "file": await MultipartFile.fromFile(file.path, filename: fileName),
     });
     if (body != null) {
       final x = body.map((e) => MapEntry(e.keys.first, e.values.first));
       data.fields.addAll(x);
     }
-    final Response response = await dio.post(apiEndPoint,
-        data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
+    final Response response = await dio.post(
+      apiEndPoint,
+      data: data,
+      onSendProgress: sendProgress,
+      cancelToken: cancelToken,
+    );
     throwIfNoSuccess(response);
     return response;
   }
 
-  Future<Response> uploadBytes(
-      {required String apiEndPoint,
-      required Uint8List bytes,
-      required String bytesExtension,
-      void sendProgress(int received, int total)?,
-      List<Map<String, String>>? body,
-      CancelToken? cancelToken}) async {
+  Future<Response> uploadBytes({
+    required String apiEndPoint,
+    required Uint8List bytes,
+    required String bytesExtension,
+    void sendProgress(int received, int total)?,
+    List<Map<String, String>>? body,
+    CancelToken? cancelToken,
+  }) async {
     //if the file is image then app .png
     final FormData data = FormData.fromMap({
       "file": MultipartFile.fromBytes(bytes, filename: "xxx.$bytesExtension"),
@@ -164,8 +175,12 @@ class CustomDio {
       final x = body.map((e) => MapEntry(e.keys.first, e.values.first));
       data.fields.addAll(x);
     }
-    final Response response = await dio.post(apiEndPoint,
-        data: data, onSendProgress: sendProgress, cancelToken: cancelToken);
+    final Response response = await dio.post(
+      apiEndPoint,
+      data: data,
+      onSendProgress: sendProgress,
+      cancelToken: cancelToken,
+    );
     throwIfNoSuccess(response);
     return response;
   }
@@ -177,11 +192,12 @@ class CustomDio {
     }
   }
 
-  Future<Response> download(
-      {required String path,
-      void sendProgress(int received, int total)?,
-      required String filePath,
-      CancelToken? cancelToken}) async {
+  Future<Response> download({
+    required String path,
+    void sendProgress(int received, int total)?,
+    required String filePath,
+    CancelToken? cancelToken,
+  }) async {
     final res = await dio.download(
       path,
       filePath,
@@ -196,6 +212,8 @@ class DioUploadFileModel {
   final String filePath;
   final String fileFiledName;
 
-  const DioUploadFileModel(
-      {required this.filePath, required this.fileFiledName});
+  const DioUploadFileModel({
+    required this.filePath,
+    required this.fileFiledName,
+  });
 }
